@@ -41,12 +41,6 @@ docker run -d --name jenkins \
 
 ### Unlock Jenkins (Get Admin Password)
 
-After starting Jenkins, go to your browser and open:
-
-[http://localhost:8080](http://localhost:8080)
-
-You will be asked for an admin password. Run this command in your terminal to get it:
-
 ```bash
 docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 Copy the output and paste it into the Jenkins web UI to continue the setup
