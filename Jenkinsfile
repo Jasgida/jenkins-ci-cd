@@ -1,20 +1,14 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.10'
-        }
-    }
+    agent any
 
     stages {
-        stage('Clone Repo') {
-            steps {
-                git 'https://github.com/Jasgida/jenkins-ci-cd.git'
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
-                sh 'pip install -r app/requirements.txt'
+                script {
+                    docker.image('python:3.10').inside {
+                        sh 'pip install -r app/requirements.txt'
+                    }
+                }
             }
         }
 
