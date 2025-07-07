@@ -43,4 +43,5 @@ docker run -d --name jenkins \
 
 ```bash
 docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+
 Copy the output and paste it into the Jenkins web UI to continue the setup
