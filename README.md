@@ -45,3 +45,26 @@ docker run -d --name jenkins \
 docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 Copy the output and paste it into the Jenkins web UI to continue the setup
+
+---
+
+## ⚙️ CI/CD Pipeline Steps (Jenkinsfile)
+
+The `Jenkinsfile` in this repo defines the CI/CD pipeline using a declarative syntax. The pipeline performs the following steps:
+
+1. **Clone the GitHub repo**
+2. **Install Python/Flask dependencies** using `requirements.txt`
+3. **Run mock/unit tests**
+4. **Build a Docker image** from the Flask app
+
+---
+
+## 📁 Folder Structure
+
+jenkins-ci-cd/
+├── app/
+│ ├── app.py
+│ └── requirements.txt
+├── Dockerfile
+├── Jenkinsfile
+├── README.md
