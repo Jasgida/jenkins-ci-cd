@@ -1,10 +1,14 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.10'
+        }
+    }
 
     stages {
         stage('Clone Repo') {
             steps {
-                git branch: 'main', url: 'https://github.com/Jasgida/jenkins-ci-cd.git'
+                git 'https://github.com/Jasgida/jenkins-ci-cd.git'
             }
         }
 
