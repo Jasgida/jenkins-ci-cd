@@ -10,7 +10,7 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                bat 'pip install -r app\\requirements.txt'
+                sh 'pip install -r app/requirements.txt'
             }
         }
 
@@ -22,8 +22,10 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t flask-jenkins-app .'
+                sh 'docker build -t flask-jenkins-app .'
             }
         }
     }
 }
+
+
