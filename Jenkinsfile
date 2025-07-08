@@ -1,20 +1,16 @@
 pipeline {
     agent any
+
     stages {
-        stage('Install Dependencies') {
+        stage('Checkout') {
             steps {
-                sh 'docker pull python:3.10'
-                sh 'docker run --rm python:3.10 pip install flask'
+                git url: 'https://github.com/Jasgida/jenkins-ci-cd.git', branch: 'main'
             }
         }
-        stage('Run Tests') {
+
+        stage('Test') {
             steps {
-                sh 'echo "Running tests..."'
-            }
-        }
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t flask-app .'
+                echo "Jenkinsfile is working correctly!"
             }
         }
     }
