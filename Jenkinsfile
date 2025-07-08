@@ -21,7 +21,10 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t flask-app .'
+                sh '''
+                    apt-get update && apt-get install -y docker.io
+                    docker build -t flask-app .
+                '''
             }
         }
     }
