@@ -1,16 +1,27 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.10'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
 
     stages {
-        stage('Checkout') {
+        stage('Install Dependencies') {
             steps {
-                git url: 'https://github.com/Jasgida/jenkins-ci-cd.git', branch: 'main'
+                sh 'pip install -r requirements.txt'
             }
         }
 
-        stage('Test') {
+        stage('Run Tests') {
             steps {
-                echo "Jenkinsfile is working correctly!"
+                sh 'python -m unittest discover'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t flask-app .'
             }
         }
     }
