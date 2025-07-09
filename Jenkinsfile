@@ -2,7 +2,6 @@ pipeline {
     agent {
         docker {
             image 'python:3.10'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
 
@@ -21,10 +20,8 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh '''
-                    apt-get update && apt-get install -y docker.io
-                    docker build -t flask-app .
-                '''
+                // This will only work if Docker is installed on the host and socket is mounted
+                sh 'docker build -t flask-app .'
             }
         }
     }
