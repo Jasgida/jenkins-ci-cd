@@ -12,19 +12,29 @@ pipeline {
             }
         }
 
-        stage('Install Python & Dependencies') {
+        stage('Setup Python Environment') {
             steps {
                 sh '''
                     apt-get update
-                    apt-get install -y python3 python3-pip
-                    pip3 install -r requirements.txt
+                    apt-get install -y python3 python3-venv python3-pip
+
+                    # Create and activate virtual environment
+                    python3 -m venv venv
+                    . venv/bin/activate
+
+                    # Upgrade pip and install dependencies
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
                 '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'pytest || echo "⚠️ No tests found, skipping..."'
+                sh '''
+                    . venv/bin/activate
+                    pytest || echo "⚠️ No tests found"
+                '''
             }
         }
 
