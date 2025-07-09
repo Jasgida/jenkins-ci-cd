@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.10'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    }
+    agent any
 
     environment {
         DOCKER_IMAGE = "flask-app"
@@ -17,10 +12,13 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Install Python & Dependencies') {
             steps {
-                sh 'pip install --upgrade pip'
-                sh 'pip install -r requirements.txt'
+                sh '''
+                    apt-get update
+                    apt-get install -y python3 python3-pip
+                    pip3 install -r requirements.txt
+                '''
             }
         }
 
@@ -39,10 +37,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Build pipeline completed successfully!"
+            echo "✅ Build completed"
         }
         failure {
-            echo "❌ Build pipeline failed."
+            echo "❌ Build failed"
         }
     }
 }
