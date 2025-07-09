@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.10'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
 
     environment {
         DOCKER_IMAGE = "flask-app"
@@ -14,13 +19,14 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
+                sh 'pip install --upgrade pip'
                 sh 'pip install -r requirements.txt'
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'pytest || echo "No tests found, continuing..."'
+                sh 'pytest || echo "⚠️ No tests found, skipping..."'
             }
         }
 
