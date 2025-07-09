@@ -2,16 +2,13 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'flask-app'
-        CONTAINER_NAME = 'flask-app-container'
-        DOCKERHUB_REPO = 'jasgida17/flask-app'
+        DOCKER_HUB_REPO = 'jasgida17/flask-app'
     }
 
     stages {
-
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/Jasgida/jenkins-ci-cd.git'
+                git branch: 'main', url: 'https://github.com/Jasgida/jenkins-ci-cd.git'
             }
         }
 
@@ -39,23 +36,19 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME .'
+                sh 'docker build -t flask-app .'
             }
         }
 
         stage('Remove Existing Container') {
             steps {
-                sh '''
-                    docker rm -f $CONTAINER_NAME || true
-                '''
+                sh 'docker rm -f flask-app-container || true'
             }
         }
 
         stage('Run Flask Container') {
             steps {
-                sh '''
-                    docker run -d -p 5000:5000 --name $CONTAINER_NAME $IMAGE_NAME
-                '''
+                sh 'docker run -d -p 5000:5000 --name flask-app-container flask-app'
             }
         }
 
@@ -63,9 +56,9 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
-                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                        docker tag $IMAGE_NAME $DOCKERHUB_REPO:latest
-                        docker push $DOCKERHUB_REPO:latest
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker tag flask-app $DOCKER_HUB_REPO:latest
+                        docker push $DOCKER_HUB_REPO:latest
                     '''
                 }
             }
@@ -73,11 +66,11 @@ pipeline {
     }
 
     post {
+        success {
+            echo '✅ Build, test, and deployment succeeded!'
+        }
         failure {
             echo '❌ Pipeline failed.'
-        }
-        success {
-            echo '✅ Pipeline succeeded!'
         }
     }
 }
