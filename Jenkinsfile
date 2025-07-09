@@ -1,8 +1,14 @@
 pipeline {
     agent {
-        docker {
-            image 'python:3.10'
+        dockerfile {
+            filename 'Dockerfile'
+            dir '.'
+            additionalBuildArgs '--network=host'
         }
+    }
+
+    environment {
+        DOCKER_IMAGE = 'flask-app:latest'
     }
 
     stages {
@@ -20,8 +26,13 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                // This will only work if Docker is installed on the host and socket is mounted
-                sh 'docker build -t flask-app .'
+                sh 'docker build -t $DOCKER_IMAGE .'
+            }
+        }
+
+        stage('List Docker Images') {
+            steps {
+                sh 'docker images'
             }
         }
     }
