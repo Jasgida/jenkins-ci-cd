@@ -2,15 +2,16 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "flask-app"
-        CONTAINER_NAME = "flask-app-container"
-        DOCKER_TAG = "latest"
+        IMAGE_NAME = 'flask-app'
+        CONTAINER_NAME = 'flask-app-container'
+        DOCKERHUB_REPO = 'jasgida17/flask-app'
     }
 
     stages {
+
         stage('Checkout Code') {
             steps {
-                git url: 'https://github.com/Jasgida/jenkins-ci-cd.git', branch: 'main'
+                git 'https://github.com/Jasgida/jenkins-ci-cd.git'
             }
         }
 
@@ -38,19 +39,23 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t $DOCKER_IMAGE ."
+                sh 'docker build -t $IMAGE_NAME .'
             }
         }
 
         stage('Remove Existing Container') {
             steps {
-                sh "docker rm -f $CONTAINER_NAME || true"
+                sh '''
+                    docker rm -f $CONTAINER_NAME || true
+                '''
             }
         }
 
         stage('Run Flask Container') {
             steps {
-                sh "docker run -d -p 5000:5000 --name $CONTAINER_NAME $DOCKER_IMAGE || echo '⚠️ Container may already be running'"
+                sh '''
+                    docker run -d -p 5000:5000 --name $CONTAINER_NAME $IMAGE_NAME
+                '''
             }
         }
 
@@ -58,9 +63,9 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker tag $DOCKER_IMAGE $DOCKER_USER/$DOCKER_IMAGE:$DOCKER_TAG
-                        docker push $DOCKER_USER/$DOCKER_IMAGE:$DOCKER_TAG
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        docker tag $IMAGE_NAME $DOCKERHUB_REPO:latest
+                        docker push $DOCKERHUB_REPO:latest
                     '''
                 }
             }
@@ -68,11 +73,11 @@ pipeline {
     }
 
     post {
-        success {
-            echo '✅ Pipeline completed successfully.'
-        }
         failure {
             echo '❌ Pipeline failed.'
+        }
+        success {
+            echo '✅ Pipeline succeeded!'
         }
     }
 }
